@@ -4,6 +4,10 @@ terraform {
       source = "hashicorp/azurerm"
       version = "3.45.0"
     }
+    aws = {
+      source = "hashicorp/aws"
+      version = "4.56.0"
+    }
   }
 }
 
@@ -14,11 +18,8 @@ provider "azurerm" {
   }
 }
 
-resource "azuread_user" "example" {
-    count = length(var.userinformation)
-    user_principal_name = "${var.userinformation[count.index].princip}"
-    display_name = "${var.userinformation[count.index].display}"
-
+provider "aws" {
+  # Configuration options
 }
 
 resource "azurerm_resource_group" "example" {
@@ -31,15 +32,13 @@ variable "numberofrg" {
     default = 2
 }
 
-variable "rgname" {
-    default = "rg-name-20230302"
 
+resource "aws_iam_user" "new_users" {
+  for_each = toset(var.new_users)
+  name = each.value
 }
 
-variable "userinformation"{
-    default = [
-    {"princip":"ryan@examplecorp.com", "display":"Ryan"},
-    {"princip":"john@examplecorp.com", "display":"John"}
-    ]
-
+variable "new_users" {
+  default = ["user1", "user2", "user3"]
 }
+
